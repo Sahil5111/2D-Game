@@ -3,17 +3,23 @@ const MAX_SPEED = 95
 const accel = 500
 const fric = 500
 const roll_speed = 125
+signal place_clone()
 
+#var active = true
 enum{
 	move,
 	roll,
-	atk
+	atk,
+	clone
 }
 
 var state = move
 var velocity = Vector2.ZERO
 var roll_vector = Vector2.ZERO
 
+onready var pos = get_node("Position2D")
+onready var posSprite = get_node("Position2D/Sprite")
+onready var player = true
 onready var animationplayer = $AnimationPlayer
 onready var animationtree = $AnimationTree
 onready var animationstate = animationtree.get("parameters/playback")
@@ -33,6 +39,8 @@ func _physics_process(delta):
 	
 		atk:
 			atk_()
+		clone:
+			clone_()
 	
 func move_(delta):
 	var input_vector = Vector2.ZERO
@@ -59,6 +67,8 @@ func move_(delta):
 		state = atk
 	if Input.is_action_just_pressed("roll"):
 		state = roll
+	if Input.is_action_just_pressed("shadow clone"):
+		state = clone
 	
 	velocity = move_and_slide(velocity)
 
@@ -77,7 +87,20 @@ func atk_finish():
 
 func roll_finished():
 	state = move
+	
+func clone_():
+	if not player :
+		pass
+	set_physics_process(false) 
+	posSprite.visible=true
+	pos.set_physics_process(true)
 
 func _on_Area2D_area_entered(area):
 	if(area.name=='quit'):
 		get_tree().quit()
+
+
+
+func _on_Position2D_relay():
+	pos.visible=false
+	emit_signal("place_clone",$Position2D.global_position)

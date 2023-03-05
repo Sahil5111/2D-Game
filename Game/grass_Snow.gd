@@ -10,6 +10,6 @@ func create_grass_effect():
 
 
 
-func _on_hurt_area_entered():
+func _on_hurt_area_entered(area):
 	create_grass_effect()
 	queue_free()
